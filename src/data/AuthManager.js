@@ -1,6 +1,7 @@
-import RequestManager, {withAuth} from "./RequestManager";
+import {factory, withAuth} from "./RequestManager";
 import StorageService from "../services/StorageService";
 
+const RequestManager = factory();
 const StorageServiceManager = new StorageService();
 const RequestManagerWithAuth = withAuth(RequestManager);
 

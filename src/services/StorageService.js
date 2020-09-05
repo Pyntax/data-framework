@@ -2,6 +2,7 @@ export const KEYS = {
     oAuthToken: 'oAuthToken',
     User: 'User',
     UserId: 'UserId',
+    RedirectUrlAfterLoggingIn: 'RedirectUrlAfterLoggingIn',
 };
 
 /**
@@ -10,6 +11,14 @@ export const KEYS = {
 function StorageService() {
     this.shortStorage = window.sessionStorage;
     this.longStorage = window.localStorage;
+    this.KEYS = KEYS
+}
+
+/**
+ * @param keys
+ */
+StorageService.prototype.registerKeys = function (keys) {
+    this.KEYS = Object.assign({}, this.KEYS, keys);
 }
 
 /**
@@ -45,6 +54,18 @@ StorageService.prototype.removeItem = function (key, storeForALongTime) {
 
 /**
  *
+ * @param redirectUrlAfterLoggingIn
+ */
+StorageService.prototype.setRedirectUrlAfterLoggingIn = function (redirectUrlAfterLoggingIn) {
+    return this.getStorage(true).setItem(this.KEYS.RedirectUrlAfterLoggingIn, redirectUrlAfterLoggingIn);
+}
+
+StorageService.prototype.getRedirectUrlAfterLoggingIn = function () {
+    return this.getStorage(true).getItem(this.KEYS.RedirectUrlAfterLoggingIn)
+}
+
+/**
+ *
  * @param key
  * @param value
  * @param storeForALongTime
@@ -68,8 +89,8 @@ StorageService.prototype.getItem = function (key, storeForALongTime) {
  * @param user
  */
 StorageService.prototype.setUser = function (user) {
-    this.setItem(KEYS.UserId, user.id, false);
-    return this.setItem(KEYS.User, user, false);
+    this.setItem(this.KEYS.UserId, user.id, false);
+    return this.setItem(this.KEYS.User, user, false);
 }
 
 /**
@@ -77,7 +98,7 @@ StorageService.prototype.setUser = function (user) {
  * @returns {*}
  */
 StorageService.prototype.getUserId = function () {
-    return this.getItem(KEYS.UserId);
+    return this.getItem(this.KEYS.UserId);
 }
 
 /**
@@ -85,7 +106,7 @@ StorageService.prototype.getUserId = function () {
  * @returns {*}
  */
 StorageService.prototype.getUser = function () {
-    return this.getItem(KEYS.User);
+    return this.getItem(this.KEYS.User);
 }
 
 /**
@@ -93,7 +114,7 @@ StorageService.prototype.getUser = function () {
  * @returns {*}
  */
 StorageService.prototype.setOAuthToken = function (token) {
-    return this.setItem(KEYS.oAuthToken, token, true);
+    return this.setItem(this.KEYS.oAuthToken, token, true);
 }
 
 /**
@@ -101,7 +122,7 @@ StorageService.prototype.setOAuthToken = function (token) {
  * @returns {*}
  */
 StorageService.prototype.getOAuthToken = function () {
-    return this.getItem(KEYS.oAuthToken, true);
+    return this.getItem(this.KEYS.oAuthToken, true);
 }
 
 /**
@@ -109,7 +130,7 @@ StorageService.prototype.getOAuthToken = function () {
  * @returns {*}
  */
 StorageService.prototype.getAccessToken = function () {
-    const oAuthToken = this.getItem(KEYS.oAuthToken, true);
+    const oAuthToken = this.getItem(this.KEYS.oAuthToken, true);
     return ((oAuthToken !== null && oAuthToken !== undefined)
         && (oAuthToken.access_token !== null && oAuthToken.access_token !== undefined)) ? oAuthToken.access_token : null;
 }

@@ -1,5 +1,4 @@
 import StorageService from "../services/StorageService";
-import history from "../utils/history";
 import * as RequestManager from './RequestManager';
 
 /**
@@ -15,9 +14,12 @@ export const CRUD = {
     RESOURCE_BY_ID: "RESOURCE_BY_ID",
 }
 
-
 /**
+ *
  * @param errorCallback
+ * @param history
+ *
+ * @returns {function(...[*]=)}
  */
 export function handleRequestError(errorCallback) {
     return function (errorResponse) {
@@ -27,14 +29,12 @@ export function handleRequestError(errorCallback) {
             switch (errorResponse.response.status) {
                 case 401:
                     StorageServiceManager.clearAll();
-                    history.push('/login');
-                    return;
-                case 404:
-                case 422:
-                    errorCallback(errorResponse);
-                    return;
+                    StorageServiceManager.setRedirectUrlAfterLoggingIn(window.location.pathname);
+                    break;
             }
         }
+
+        errorCallback(errorResponse);
     }
 }
 

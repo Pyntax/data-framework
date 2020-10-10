@@ -62,8 +62,48 @@ function ResourceManagerFactory(resourceUrls, requestManager) {
  * @returns {*}
  */
 ResourceManagerFactory.prototype.getById = function getById(id) {
-    const URL = this.resourceUrls.getResourceByIdUrl(id);
-    return this.requestManager.get(URL);
+    const URL = this.getResourceByIdUrl(id);
+    return this.get(URL);
+}
+
+/**
+ *
+ * @param url
+ * @returns {*}
+ */
+ResourceManagerFactory.prototype.get = function (url) {
+    return this.requestManager.get(url);
+}
+
+/**
+ *
+ * @param url
+ * @param data
+ * @returns {Promise<AxiosResponse<any>> | IDBRequest<IDBValidKey> | Promise<void>}
+ */
+ResourceManagerFactory.prototype.put = function (url, data) {
+    return this.requestManager.put(url, data);
+}
+
+
+/**
+ *
+ * @param url
+ * @param data
+ * @returns {Promise<AxiosResponse<any>> | IDBRequest<IDBValidKey> | Promise<void>}
+ */
+ResourceManagerFactory.prototype.delete = function (url, data) {
+    return this.requestManager.delete(url, data);
+}
+
+/**
+ *
+ * @param url
+ * @param data
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+ResourceManagerFactory.prototype.post = function (url, data) {
+    return this.requestManager.post(url, data);
 }
 
 /**
@@ -72,8 +112,18 @@ ResourceManagerFactory.prototype.getById = function getById(id) {
  * @returns {Promise<T>}
  */
 ResourceManagerFactory.prototype.update = function update(id, data) {
-    const URL = this.resourceUrls.getResourceByIdUrl(id);
-    return this.requestManager.put(URL, data);
+    const URL = this.getResourceByIdUrl(id);
+    return this.put(URL, data);
+}
+
+/**
+ * @param id
+ * @param data
+ * @returns {Promise<T>}
+ */
+ResourceManagerFactory.prototype.update = function update(id, data) {
+    const URL = this.getResourceByIdUrl(id);
+    return this.put(URL, data);
 }
 
 /**
@@ -83,33 +133,61 @@ ResourceManagerFactory.prototype.update = function update(id, data) {
  * @returns {*}
  */
 ResourceManagerFactory.prototype.delete = function (id, data) {
-    const URL = this.resourceUrls.getResourceByIdUrl(id);
-    return this.requestManager.delete(URL, data);
+    const URL = this.getResourceByIdUrl(id);
+    return this.delete(URL, data);
+}
+
+
+ResourceManagerFactory.prototype.prependGetVariables = function (additionalParameters) {
+    let _urlWithGetStrings = "";
+    Object.keys(additionalParameters).forEach((key) => {
+        _urlWithGetStrings += (key+"="+additionalParameters[key]+"&");
+    });
+
+    return _urlWithGetStrings;
 }
 
 /**
- *
  * @param pageSize
  * @param pageNumber
+ * @param additionalParameters
  *
  * @returns {*}
  */
-ResourceManagerFactory.prototype.findAll = function (pageSize, pageNumber) {
+ResourceManagerFactory.prototype.findAll = function (pageSize, pageNumber, additionalParameters) {
+    additionalParameters = additionalParameters = {};
     pageSize = pageSize || 20;
     pageNumber = pageNumber || 1;
 
-    const URL = this.resourceUrls.getCollectionUrl();
-    return this.requestManager.get(URL + "?pageSize=" + pageSize + "&pageNumber=" + pageNumber);
+    const URL = this.resourceUrls.getCollectionUrl() + "?pageSize=" + pageSize + "&pageNumber=" + pageNumber;
+    return this.get(URL + this.prependGetVariables(additionalParameters));
 }
 
 /**
  *
+ * @param id
+ * @returns {*}
+ */
+ResourceManagerFactory.prototype.getResourceByIdUrl = function (id) {
+    return this.resourceUrls.getResourceByIdUrl(id);
+}
+
+/**
+ *
+ * @returns {*}
+ */
+ResourceManagerFactory.prototype.getCollectionUrl = function () {
+    return this.resourceUrls.getCollectionUrl();
+}
+
+/**
+ *s
  * @param data
  * @returns {*}
  */
 ResourceManagerFactory.prototype.create = function (data) {
-    const URL = this.resourceUrls.getCollectionUrl();
-    return this.requestManager.post(URL, data);
+    const URL = this.getCollectionUrl();
+    return this.post(URL, data);
 }
 
 export default ResourceManagerFactory;
